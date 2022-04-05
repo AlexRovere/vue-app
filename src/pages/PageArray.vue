@@ -1,24 +1,29 @@
 <template>
   <q-page class="q-pa-lg">
-    <div class="flex-center text-center">
+    <div class="flex-center text-center column">
       <q-btn-group>
         <q-btn @click="sort" color="primary" glossy label="sort" />
         <q-btn color="primary" glossy label="map" />
-        <q-btn color="primary" glossy label="filter" />
-        <q-btn color="primary" glossy label="Fourth" />
+        <q-btn @click="filter" color="primary" glossy label="filter" />
+        <q-btn @click="reset" color="primary" glossy label="reset" />
       </q-btn-group>
       <h5 class="q-mt-none">Tableaux</h5>
+      <div class="col-6">
+        <q-input outlined v-model="query"></q-input>
+      </div>
       <pre>{{ arr }}</pre>
     </div>
   </q-page>
 </template>
 
 <script>
+import { resetTracking } from '@vue/reactivity'
 import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'page-array',
   setup () {
+    const query = ref('a')
     const arr = ref([
       {
         id: 1,
@@ -33,8 +38,8 @@ export default defineComponent({
         name: 'alex'
       },
       {
-        id: 3,
-        name: 'alex'
+        id: 8,
+        name: 'elly'
       }
     ])
 
@@ -51,9 +56,34 @@ export default defineComponent({
       return 0 // si c'est la meme valeur
     })
 
+    const filter = () => {
+      arr.value = arr.value.filter(item => item.name.includes(query.value))
+      console.log(arr.value)
+    }
+
+    const reset = () => arr.value = [{
+      id: 1,
+      name: 'jean'
+    },
+    {
+      id: 8,
+      name: 'robert'
+    },
+    {
+      id: 3,
+      name: 'alex'
+    },
+    {
+      id: 8,
+      name: 'elly'
+    }]
+
     return {
       arr,
-      sort
+      query,
+      sort,
+      filter,
+      reset
     }
   }
 })

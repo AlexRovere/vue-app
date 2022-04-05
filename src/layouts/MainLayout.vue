@@ -3,9 +3,10 @@
     <q-header elevated class="q-pa-sm">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <div class="column">
+        <div class="column text-center">
           <div>Liste des taches du</div>
-          <div class="text-center">{{ dateNow }}</div>
+          <div>{{ dateNow }}</div>
+          <div>{{ hours }}</div>
         </div>
         <q-space />
         <div class="col-1">
@@ -84,7 +85,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, onMounted } from 'vue'
 import { date } from 'quasar'
 import EssentialLink from 'components/EssentialLink.vue'
 import { useCounterStore } from 'src/stores/example-store'
@@ -143,10 +144,23 @@ export default defineComponent({
   setup () {
     const leftDrawerOpen = ref(false)
     const $store = useCounterStore()
+    const hours = ref()
 
     const dateNow = computed(() => {
-      let timeStamp = Date.now()
+      const timeStamp = Date.now()
       return date.formatDate(timeStamp, 'DD/MM/YYYY')
+    })
+
+    const getNow = () => {
+      const today = new Date();
+      const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      const dateTime = time;
+      hours.value = dateTime;
+    }
+    getNow()
+
+    onMounted(() => {
+      setInterval(() => getNow(), 1000)
     })
 
     return {
@@ -156,7 +170,8 @@ export default defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
       dateNow,
-      store: $store
+      store: $store,
+      hours
     }
   }
 })
