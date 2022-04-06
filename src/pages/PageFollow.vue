@@ -11,13 +11,14 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
+import { api } from 'boot/axios'
 
 export default defineComponent({
   name: 'page-folow',
   setup () {
     const columns = ref([{
-      name: 'Date',
+      name: 'date',
       required: true,
       label: 'Date',
       align: 'left',
@@ -25,82 +26,34 @@ export default defineComponent({
       format: val => `${val}`,
       sortable: true
     },
-    { name: 'Humeur', align: 'center', label: 'Humeur', field: 'Humeur', sortable: true },
-    { name: 'Quantité', label: 'Quantité', field: 'Quantité', sortable: true },
-    { name: 'Médicaments', label: 'Médicaments', field: 'Médicaments' },
-    { name: 'Commentaires', label: 'Commentaires', field: 'Commentaires' }
+    { name: 'mood', align: 'center', label: 'Humeur', field: 'mood', sortable: true },
+    { name: 'quantity', label: 'Quantité', field: 'quantity', sortable: true },
+    { name: 'medication', label: 'Médicaments', field: 'medication' },
+    { name: 'comment', label: 'Commentaires', field: 'comment' }
     ])
-    const rows = ref([
-      {
-        date: 'Frozen Yogurt',
-        Humeur: 159,
-        Quantité: 6.0,
-        Médicaments: 24,
-        Commentaires: 4.0,
-      }, {
-        date: 'Ice cream sandwich',
-        Humeur: 237,
-        Quantité: 9.0,
-        Médicaments: 37,
-        Commentaires: 4.3,
-      },
-      {
-        date: 'Eclair',
-        Humeur: 262,
-        Quantité: 16.0,
-        Médicaments: 23,
-        Commentaires: 6.0,
-      },
-      {
-        date: 'Cupcake',
-        Humeur: 305,
-        Quantité: 3.7,
-        Médicaments: 67,
-        Commentaires: 4.3,
-      },
-      {
-        date: 'Gingerbread',
-        Humeur: 356,
-        Quantité: 16.0,
-        Médicaments: 49,
-        Commentaires: 3.9,
-      },
-      {
-        date: 'Jelly bean',
-        Humeur: 375,
-        Quantité: 0.0,
-        Médicaments: 94,
-        Commentaires: 0.0,
-      },
-      {
-        date: 'Lollipop',
-        Humeur: 392,
-        Quantité: 0.2,
-        Médicaments: 98,
-        Commentaires: 0,
-      },
-      {
-        date: 'Honeycomb',
-        Humeur: 408,
-        Quantité: 3.2,
-        Médicaments: 87,
-        Commentaires: 6.5,
-      },
-      {
-        date: 'Donut',
-        Humeur: 452,
-        Quantité: 25.0,
-        Médicaments: 51,
-        Commentaires: 4.9,
-      },
-      {
-        date: 'KitKat',
-        Humeur: 518,
-        Quantité: 26.0,
-        Médicaments: 65,
-        Commentaires: 7,
-      }
-    ])
+    const rows = ref()
+
+
+    // const pingServer = () => api.get('http://localhost:8080').then((response) => rows.value = response.data).catch((e) => console.log(e))
+
+    const getAllFollows = () => api.get('http://localhost:8080/follow/all')
+      .then((response) => {
+        rows.value = response.data.map(item => {
+          return {
+            date: item.createdAt,
+            mood: item.mood,
+            quantity: item.quantity,
+            medication: item.medication,
+            comment: item.comment
+          }
+        })
+      }).catch((e) => console.log(e))
+
+    // pingServer()
+
+    onMounted(() => {
+      getAllFollows()
+    })
 
     return {
       columns,
